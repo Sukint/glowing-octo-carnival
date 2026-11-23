@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>测测你有多高的配得感</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+  /* ============ 基础与主题 ============ */
+  :root{
+    --pink-50:#fdf4f6;
+    --pink-100:#fbe9ee;
+    --pink-200:#f6d3dc;
+    --pink-300:#eeb3c2;
+    --pink-400:#dd8ba1;
+    --rose:#c95f7c;
+    --rose-deep:#a83d5e;
+    --ribbon:#b23a52;
+    --ribbon-dark:#8e2b43;
+    --ink:#4a333c;
+    --ink-soft:#7d626d;
+    --card:#ffffff;
+    --line:#f2d7df;
+    --shadow:0 10px 30px rgba(168,61,94,.12);
+    --radius:20px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 15% 10%, #fdeef2 0%, transparent 45%),
+      radial-gradient(circle at 85% 90%, #fbe4ea 0%, transparent 45%),
+      linear-gradient(180deg,var(--pink-50) 0%,#fff 60%,var(--pink-50) 100%);
+    min-height:100vh;
+    line-height:1.6;
+  }
+  /* 爱心花瓣底纹 */
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Cg fill='none' stroke='%23eeb3c2' stroke-width='1' opacity='0.25'%3E%3Cpath d='M55 40c-7-9-22-3-22 8 0 8 10 15 22 24 12-9 22-16 22-24 0-11-15-17-22-8z'/%3E%3Ccircle cx='20' cy='22' r='3'/%3E%3Ccircle cx='90' cy='70' r='3'/%3E%3Cpath d='M18 88c5-3 10-3 14 0M78 18c5-3 10-3 14 0'/%3E%3C/g%3E%3C/svg%3E");
+    background-size:110px 110px;
+    pointer-events:none;
+    z-index:0;
+  }
+  .wrap{
+    position:relative;z-index:1;
+    max-width:480px;margin:0 auto;
+    min-height:100vh;
+    padding:24px 20px 48px;
+  }
+
+  /* ============ 通用组件 ============ */
+  .view{display:none;animation:fadeIn .45s ease;}
+  .view.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .serif{font-family:"Noto Serif SC",serif;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    border:none;cursor:pointer;
+    font-family:inherit;font-size:16px;font-weight:500;letter-spacing:.08em;
+    color:#fff;padding:15px 34px;border-radius:999px;
+    background:linear-gradient(135deg,var(--rose) 0%,var(--ribbon) 100%);
+    box-shadow:0 10px 22px rgba(178,58,82,.32);
+    transition:transform .2s ease,box-shadow .2s ease;
+  }
+  .btn:active{transform:scale(.96);}
+  .btn.ghost{
+    background:#fff;color:var(--rose-deep);
+    border:1px solid var(--line);box-shadow:var(--shadow);
+  }
+
+  /* ============ 首页 ============ */
+  .hero{text-align:center;padding-top:34px;}
+  .hero .heart-mark{width:120px;margin:0 auto 18px;display:block;}
+  .hero h1{
+    font-size:27px;font-weight:900;color:var(--rose-deep);
+    letter-spacing:.05em;line-height:1.4;margin:0 10px 14px;
+  }
+  .hero .sub{
+    margin:0 14px 8px;color:var(--ink-soft);font-size:15px;font-weight:300;
+  }
+  .hero .meta{
+    display:inline-flex;align-items:center;gap:10px;
+    margin:16px 0 30px;padding:8px 18px;
+    background:rgba(255,255,255,.7);border:1px solid var(--line);border-radius:999px;
+    font-size:13px;color:var(--rose-deep);
+  }
+  .hero .meta .dot{width:5px;height:5px;border-radius:50%;background:var(--pink-300);}
+  .hero-card{
+    background:rgba(255,255,255,.72);border:1px solid var(--line);
+    border-radius:var(--radius);padding:22px 20px;margin:0 0 30px;
+    box-shadow:var(--shadow);text-align:left;
+  }
+  .hero-card h3{font-size:15px;color:var(--rose-deep);margin-bottom:10px;letter-spacing:.05em;}
+  .hero-card ul{list-style:none;}
+  .hero-card li{
+    font-size:14px;color:var(--ink-soft);padding:7px 0 7px 26px;position:relative;
+  }
+  .hero-card li::before{
+    content:"♥";position:absolute;left:2px;color:var(--pink-300);font-size:12px;top:9px;
+  }
+
+  /* ============ 答题页 ============ */
+  .quiz-top{margin-bottom:18px;}
+  .quiz-progress-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--ink-soft);margin-bottom:10px;}
+  .quiz-progress-row b{color:var(--rose-deep);font-size:15px;}
+  .progress{height:8px;border-radius:999px;background:var(--pink-100);overflow:hidden;}
+  .progress-bar{
+    height:100%;border-radius:999px;width:0;
+    background:linear-gradient(90deg,var(--pink-400),var(--ribbon));
+    transition:width .35s ease;
+  }
+  .q-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px 20px;box-shadow:var(--shadow);margin-bottom:22px;
+  }
+  .q-tag{
+    display:inline-block;font-size:12px;letter-spacing:.15em;color:var(--rose);
+    border:1px solid var(--pink-200);border-radius:999px;padding:4px 12px;margin-bottom:16px;
+    background:var(--pink-50);
+  }
+  .q-text{font-size:18px;font-weight:500;line-height:1.7;margin-bottom:22px;}
+  .options{display:flex;flex-direction:column;gap:13px;}
+  .option{
+    display:flex;align-items:flex-start;gap:13px;
+    background:var(--pink-50);border:1.5px solid transparent;border-radius:16px;
+    padding:15px 16px;cursor:pointer;transition:all .2s ease;text-align:left;width:100%;
+    font-family:inherit;
+  }
+  .option:active{transform:scale(.98);}
+  .option .badge{
+    flex:none;width:28px;height:28px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:#fff;border:1px solid var(--pink-200);color:var(--rose-deep);
+    font-size:13px;font-weight:700;
+  }
+  .option .opt-text{font-size:15px;color:var(--ink);padding-top:3px;}
+  .option.selected{
+    background:linear-gradient(135deg,#fbe9ee,#fdeef2);
+    border-color:var(--rose);
+  }
+  .option.selected .badge{background:var(--ribbon);color:#fff;border-color:var(--ribbon);}
+  .quiz-nav{display:flex;justify-content:space-between;gap:12px;}
+  .quiz-nav .btn{flex:1;padding:14px 0;font-size:15px;}
+
+  /* ============ 结果页 ============ */
+  .result-head{text-align:center;margin:10px 0 22px;}
+  .result-head .eyebrow{font-size:13px;letter-spacing:.25em;color:var(--rose);}
+  .result-head h2{font-size:24px;font-weight:900;color:var(--rose-deep);margin-top:8px;}
+  .score-card{
+    background:linear-gradient(160deg,#fff 0%,#fdeef2 100%);
+    border:1px solid var(--line);border-radius:24px;
+    padding:28px 22px;box-shadow:var(--shadow);margin-bottom:22px;position:relative;overflow:hidden;
+  }
+  .score-card::before{
+    content:"";position:absolute;top:-30px;right:-30px;width:120px;height:120px;
+    background:radial-gradient(circle,rgba(238,179,194,.35),transparent 70%);
+  }
+  .score-hero{text-align:center;margin-bottom:20px;}
+  .score-hero .level{font-size:22px;font-weight:900;color:var(--rose-deep);letter-spacing:.04em;}
+  .score-hero .level-tag{font-size:14px;color:var(--ink-soft);margin-top:6px;}
+  .score-ring{margin:18px auto 0;width:140px;height:140px;position:relative;}
+  .score-ring svg{transform:rotate(-90deg);}
+  .score-ring .num{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .score-ring .num b{font-size:30px;color:var(--rose-deep);}
+  .score-ring .num span{font-size:12px;color:var(--ink-soft);}
+  .match-section{margin-top:18px;}
+  .match-section h4{
+    font-size:14px;color:var(--rose-deep);margin-bottom:10px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .match-section h4::before{content:"";width:18px;height:1.5px;background:var(--rose);}
+  .match-section p,.match-section li{font-size:14px;color:var(--ink-soft);}
+  .match-section ul{list-style:none;}
+  .match-section li{padding-left:18px;position:relative;margin:6px 0;}
+  .match-section li::before{content:"♡";position:absolute;left:0;color:var(--pink-300);font-size:12px;}
+
+  .rank-title{font-size:16px;font-weight:700;color:var(--ink);margin:26px 0 6px;display:flex;align-items:center;gap:10px;}
+  .rank-title::before,.rank-title::after{content:"";flex:1;height:1px;background:var(--line);}
+  .rank-sub{font-size:12.5px;color:var(--ink-soft);text-align:center;margin:4px 0 14px;}
+  .rank-list{display:flex;flex-direction:column;gap:12px;}
+  .rank-item{
+    background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px 16px;
+  }
+  .rank-item.top{border-color:var(--rose);background:linear-gradient(135deg,#fff,#fdeef2);}
+  .rank-item .r-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  .rank-item .r-name{font-size:15px;font-weight:600;}
+  .rank-item .r-pct{font-size:14px;color:var(--rose-deep);font-weight:700;}
+  .rank-item .r-desc{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;}
+  .bar{height:7px;border-radius:999px;background:var(--pink-100);overflow:hidden;}
+  .bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--pink-300),var(--rose));}
+  .rank-item.top .bar-fill{background:linear-gradient(90deg,var(--rose),var(--ribbon-dark));}
+
+  .insight-card{
+    background:#fff;border:1px solid var(--line);border-radius:20px;
+    padding:20px 18px;margin-top:14px;box-shadow:var(--shadow);
+  }
+  .insight-card h4{font-size:15px;color:var(--rose-deep);margin-bottom:10px;}
+  .insight-card .block{margin:12px 0;}
+  .insight-card .block .label{font-size:12.5px;color:var(--rose);font-weight:600;margin-bottom:4px;letter-spacing:.05em;}
+  .insight-card .block p{font-size:14px;color:var(--ink-soft);}
+
+  .advice-card{
+    background:linear-gradient(160deg,#fff 0%,#fdeef2 100%);
+    border:1px solid var(--line);border-radius:20px;padding:22px 20px;margin-top:22px;
+  }
+  .advice-card h4{font-size:15px;color:var(--rose-deep);margin-bottom:12px;}
+  .advice-card li{font-size:14px;color:var(--ink-soft);padding-left:18px;position:relative;margin:8px 0;list-style:none;}
+  .advice-card li::before{content:"✿";position:absolute;left:0;color:var(--pink-300);font-size:12px;}
+
+  .result-actions{display:flex;gap:12px;margin-top:28px;}
+  .result-actions .btn{flex:1;padding:15px 0;}
+  .footer-note{text-align:center;font-size:12px;color:var(--pink-300);margin-top:30px;letter-spacing:.1em;}
+
+  @media (max-width:360px){
+    .hero h1{font-size:23px;}
+    .q-text{font-size:16.5px;}
+    .score-hero .level{font-size:19px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ 视图：首页 ============ -->
+  <section class="view active" id="view-home">
+    <div class="hero">
+      <svg class="heart-mark" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+        <circle cx="60" cy="60" r="54" stroke="#f6d3dc" stroke-width="1.5" stroke-dasharray="4 6"/>
+        <path d="M60 78c-16-12-28-20-28-32 0-9 10-15 18-10 4 2.5 6 6 10 6s6-3.5 10-6c8-5 18 1 18 10 0 12-12 20-28 32z" fill="#dd8ba1" opacity=".9"/>
+      </svg>
+      <h1 class="serif">测测你有多高的配得感</h1>
+      <p class="sub">配得感，是你内心深处是否相信：<br>自己值得被爱、被善待、拥有好的东西。</p>
+      <div class="meta">
+        <span>共 10 题</span><span class="dot"></span>
+        <span>约 2 分钟</span><span class="dot"></span>
+        <span>含成因分析</span>
+      </div>
+      <div class="hero-card">
+        <h3>测试说明</h3>
+        <ul>
+          <li>凭第一直觉选择最贴近你真实状态的选项，无需掩饰。</li>
+          <li>结果会给出你的配得感得分、等级与心理成因分析。</li>
+          <li>测试仅作自我觉察参考，不替代专业心理咨询。</li>
+        </ul>
+      </div>
+      <button class="btn" id="btn-start">开始测试 ♥</button>
+    </div>
+    <p class="footer-note">DESERVING · SELF-WORTH · HEART</p>
+  </section>
+
+  <!-- ============ 视图：答题 ============ -->
+  <section class="view" id="view-quiz">
+    <div class="quiz-top">
+      <div class="quiz-progress-row">
+        <span>第 <b id="q-index">1</b> / 10 题</span>
+        <span id="q-percent">10%</span>
+      </div>
+      <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+    </div>
+    <div class="q-card">
+      <span class="q-tag" id="q-tag">QUESTION</span>
+      <p class="q-text" id="q-text"></p>
+      <div class="options" id="options"></div>
+    </div>
+    <div class="quiz-nav">
+      <button class="btn ghost" id="btn-prev">上一题</button>
+      <button class="btn" id="btn-next">下一题</button>
+    </div>
+  </section>
+
+  <!-- ============ 视图：结果 ============ -->
+  <section class="view" id="view-result">
+    <div class="result-head">
+      <div class="eyebrow">YOUR DESERVING SCORE</div>
+      <h2>你的配得感分析</h2>
+    </div>
+    <div id="result-main"></div>
+
+    <div class="rank-title">配得感卡点分布</div>
+    <p class="rank-sub">分数越高，代表该成因在你身上影响越明显</p>
+    <div class="rank-list" id="rank-list"></div>
+    <div id="insight-list"></div>
+
+    <div class="advice-card">
+      <h4>慢慢重建配得感的练习</h4>
+      <ul id="advice-list"></ul>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn ghost" id="btn-restart">再测一次</button>
+      <button class="btn" id="btn-copy">保存结果</button>
+    </div>
+    <p class="footer-note">愿你慢慢相信：你本身，就值得被好好对待</p>
+  </section>
+
+</div>
+
+<script>
+/* ================= 卡点成因档案 ================= */
+/* APP 外在认可依赖 / CON 条件化值得 / IMP 冒名顶替感 / GUI 愧疚与自我牺牲 / CMP 比较与自我否定 */
+const CAUSES = {
+  APP:{
+    name:"外在认可依赖",
+    desc:"习惯用他人的看法定义自己，需要不断被肯定才敢确认价值。",
+    root:"早年可能主要从外界反馈中认识自己，慢慢内化出“被喜欢＝有价值”的等式；一旦缺少认可，自我价值就跟着晃动。",
+    tip:"练习把评价权收回到自己手里：每天记录一件“我自己认可自己”的小事；分清“这件事没做好”和“我这个人不好”是两回事。"
+  },
+  CON:{
+    name:"条件化的值得感",
+    desc:"觉得只有足够优秀、足够乖、足够有用，自己才配被爱、被善待。",
+    root:"成长中爱与肯定可能附带条件——表现好才被表扬，懂事才被接纳。于是你把价值和表现绑定，休息、示弱、提需求都会让你不安。",
+    tip:"反复提醒自己：存在本身就值得被善待。从小事开始允许自己不完美、不讨好，观察“即使不那么乖，天也没有塌下来”。"
+  },
+  IMP:{
+    name:"冒名顶替感",
+    desc:"取得成绩时归因于运气或他人，总担心“被看穿其实没那么好”。",
+    root:"内心有一个过于苛刻的标准，习惯放大不足、忽略已具备的能力；成功没有被真正内化，所以站在成就里仍觉得自己是个冒充者。",
+    tip:"建立一份“成就证据清单”，记下自己具体做成过的事；把“我只是运气好”改写成“我也付出了努力，所以配得上结果”。"
+  },
+  GUI:{
+    name:"愧疚与自我牺牲",
+    desc:"为自己花钱、休息、争取利益会愧疚，习惯先照顾别人，把自己排在最后。",
+    root:"从小被教育要谦让、要懂事，你的需求长期被放在次要位置；久而久之，优先自己在你心里等同于自私和过错。",
+    tip:"练习合理分配资源：先满足自己的基本需求，再顾及他人。反复告诉自己，照顾自己不是亏欠别人。"
+  },
+  CMP:{
+    name:"比较与自我否定",
+    desc:"总拿自己的短板和别人的长处比，容易在对比中觉得处处不如人。",
+    root:"自我评价建立在横向比较上，缺少内在参照系；外界的光鲜被你当成全部，却忽略了每个人背后的代价与局限。",
+    tip:"把比较对象换成过去的自己，记录自己的进步；减少触发焦虑的信息摄入，逐步重建属于自己的评价标准。"
+  }
+};
+
+/* ================= 题库 ================= */
+/* score: 4 高 → 1 低；cause: 对应卡点成因，null 表示无明显卡点 */
+const QUESTIONS = [
+  {text:"收到一份超出预期的夸奖，你的第一反应是？",options:[
+    {t:"坦然收下，谢谢对方，觉得自己值得这份肯定",score:4,cause:null},
+    {t:"开心一下，但心里觉得对方可能还不太了解自己",score:3,cause:"IMP"},
+    {t:"连忙说“没有没有，运气好而已”，把夸奖推回去",score:2,cause:"IMP"},
+    {t:"很不自在，觉得对方一定是看错了、或是在客气",score:1,cause:"IMP"}]},
+  {text:"一个不错的机会（项目、岗位或关系）摆在面前，你会？",options:[
+    {t:"认真评估后主动争取，相信自己能胜任",score:4,cause:null},
+    {t:"有点犹豫，但还是愿意试一试",score:3,cause:null},
+    {t:"先想自己还差哪些条件，觉得暂时还不够格",score:2,cause:"CON"},
+    {t:"下意识退缩，觉得这种好事大概轮不到自己",score:1,cause:"CON"}]},
+  {text:"为自己花一笔钱买喜欢的东西，你的内心感受是？",options:[
+    {t:"心安理得，我值得对自己好一点",score:4,cause:null},
+    {t:"开心，但会反复比价、纠结很久",score:3,cause:"GUI"},
+    {t:"有愧疚感，觉得钱应该先花在别人或正事上",score:2,cause:"GUI"},
+    {t:"几乎舍不得为自己花钱，觉得享受是一种奢侈",score:1,cause:"GUI"}]},
+  {text:"别人对你提出不合理要求时，你通常？",options:[
+    {t:"平静而明确地拒绝，并不觉得内疚",score:4,cause:null},
+    {t:"勉强答应，但心里其实很不舒服",score:3,cause:"APP"},
+    {t:"担心拒绝会让对方不高兴，最后还是答应了",score:2,cause:"APP"},
+    {t:"习惯性讨好，生怕自己不被喜欢",score:1,cause:"APP"}]},
+  {text:"取得一个成绩时，你内心更接近哪种想法？",options:[
+    {t:"这是我努力应得的，我认可自己",score:4,cause:null},
+    {t:"高兴，但觉得自己还有很多不足",score:3,cause:"CMP"},
+    {t:"主要靠运气和别人帮忙，自己没出多少力",score:2,cause:"IMP"},
+    {t:"总觉得名不副实，迟早会被发现其实没那么好",score:1,cause:"IMP"}]},
+  {text:"在一段关系（友情、爱情或合作）里，你觉得自己？",options:[
+    {t:"可以平等地表达需求，相信对方愿意接纳",score:4,cause:null},
+    {t:"偶尔会迁就对方，但也敢说出想法",score:3,cause:"CON"},
+    {t:"习惯放低姿态，怕自己要求太多被嫌弃",score:2,cause:"APP"},
+    {t:"觉得自己必须不断付出，才配留在这段关系里",score:1,cause:"CON"}]},
+  {text:"看到别人过得很好，你的内心活动是？",options:[
+    {t:"真心祝福，同时相信自己有自己的节奏",score:4,cause:null},
+    {t:"有点羡慕，但很快回到自己的生活",score:3,cause:"CMP"},
+    {t:"忍不住对比，觉得自己哪里都不如人",score:2,cause:"CMP"},
+    {t:"强烈自我否定，觉得自己活得很失败",score:1,cause:"CMP"}]},
+  {text:"休息、躺平、什么都不做的时候，你会？",options:[
+    {t:"允许自己休息，不觉得是在浪费时间",score:4,cause:null},
+    {t:"休息时偶尔惦记没做完的事",score:3,cause:"GUI"},
+    {t:"有罪恶感，觉得自己应该一直在努力",score:2,cause:"GUI"},
+    {t:"无法安心休息，认为只有不断付出才配被肯定",score:1,cause:"CON"}]},
+  {text:"如果有人问“你觉得自己值得被爱吗”，你会？",options:[
+    {t:"毫不犹豫：值得，我本身就值得",score:4,cause:null},
+    {t:"大部分时候觉得值得，偶尔会怀疑",score:3,cause:"CON"},
+    {t:"需要对方先证明他对我好，我才敢相信",score:2,cause:"APP"},
+    {t:"说不太清，好像我得足够优秀、足够乖才值得",score:1,cause:"CON"}]},
+  {text:"面对冲突或被批评时，你的第一反应是？",options:[
+    {t:"就事论事，对的接受，不对的也不必全盘否定自己",score:4,cause:null},
+    {t:"会难受一阵，但能慢慢恢复过来",score:3,cause:"CMP"},
+    {t:"立刻觉得是自己不好，反复回想那句话",score:2,cause:"APP"},
+    {t:"习惯性把责任揽到自己身上，怀疑自己是不是很差劲",score:1,cause:"GUI"}]}
+];
+
+/* ================= 状态与视图 ================= */
+let current = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+
+const $ = id => document.getElementById(id);
+const views = {home:$("view-home"),quiz:$("view-quiz"),result:$("view-result")};
+function show(name){
+  Object.values(views).forEach(v=>v.classList.remove("active"));
+  views[name].classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ================= 答题渲染 ================= */
+function renderQuestion(){
+  const q = QUESTIONS[current];
+  $("q-index").textContent = current+1;
+  $("q-percent").textContent = Math.round(((current+1)/QUESTIONS.length)*100)+"%";
+  $("progress-bar").style.width = ((current+1)/QUESTIONS.length*100)+"%";
+  $("q-tag").textContent = "QUESTION "+String(current+1).padStart(2,"0");
+  $("q-text").textContent = q.text;
+  const box = $("options");
+  box.innerHTML = "";
+  const letters = ["A","B","C","D"];
+  q.options.forEach((o,i)=>{
+    const btn = document.createElement("button");
+    btn.className = "option" + (answers[current]===i?" selected":"");
+    btn.innerHTML = `<span class="badge">${letters[i]}</span><span class="opt-text">${o.t}</span>`;
+    btn.onclick = ()=>{
+      answers[current] = i;
+      [...box.children].forEach((el,idx)=>el.classList.toggle("selected",idx===i));
+    };
+    box.appendChild(btn);
+  });
+  $("btn-prev").style.visibility = current===0 ? "hidden":"visible";
+  $("btn-next").textContent = current===QUESTIONS.length-1 ? "查看结果 ♥" : "下一题";
+}
+
+$("btn-start").onclick = ()=>{current=0;answers=new Array(QUESTIONS.length).fill(null);show("quiz");renderQuestion();};
+$("btn-prev").onclick = ()=>{if(current>0){current--;renderQuestion();}};
+$("btn-next").onclick = ()=>{
+  if(answers[current]===null){
+    const box=$("options");
+    box.animate([{transform:"translateX(0)"},{transform:"translateX(-8px)"},{transform:"translateX(8px)"},{transform:"translateX(0)"}],{duration:250});
+    return;
+  }
+  if(current<QUESTIONS.length-1){current++;renderQuestion();}
+  else{calcResult();show("result");renderResult();}
+};
+
+/* ================= 计分与结果 ================= */
+const MAX_SCORE = QUESTIONS.length*4;
+let totalScore = 0;
+let causeScores = {};
+
+function calcResult(){
+  totalScore = 0;
+  causeScores = {};
+  Object.keys(CAUSES).forEach(k=>causeScores[k]=0);
+  answers.forEach((ai,qi)=>{
+    if(ai===null) return;
+    const o = QUESTIONS[qi].options[ai];
+    totalScore += o.score;
+    if(o.cause){
+      // 分值越低，卡点权重越高：4→0.5  3→1  2→2  1→3
+      const weight = o.score===1?3 : o.score===2?2 : o.score===3?1 : 0.5;
+      causeScores[o.cause] += weight;
+    }
+  });
+}
+
+function levelOf(score){
+  if(score>=33) return {label:"配得感稳固", tag:"你内心相信自己值得拥有好的一切",
+    analysis:"你的内在价值感比较扎实：相信自己值得好的机会、善待与爱。面对夸奖能坦然接受，争取利益时少有内疚，被批评也不容易全盘否定自己。这种稳定的配得感，让你在关系和机会面前更敢向前，也更愿意为自己争取。",
+    remind:"偶尔仍要留意，是否在某些亲密关系或陌生领域里，旧的自我怀疑会悄悄冒出来；继续保持对自己的觉察就好。"};
+  if(score>=26) return {label:"配得感良好", tag:"整体认可自己，少数场景仍会自我怀疑",
+    analysis:"整体上你认可自己的价值，多数场景能坦然争取和接受；但在特定领域——比如被当众肯定、争取更高利益、面对冲突时——仍会习惯性往后缩，觉得自己“还差一点”。这些波动往往来自过去形成的旧习惯，而不是你真的不够好。",
+    remind:"留意自己在哪些场景最容易自我压低，那正是配得感需要被加固的地方。"};
+  if(score>=19) return {label:"配得感波动", tag:"状态时高时低，常把自己排在后面",
+    analysis:"你的配得感时高时低：状态好时相信自己值得，一旦遇到否定、对比，或需要为自己争取的场合，就容易退回到“我不够好”的位置。你常常把自己的需求放在后面，习惯用付出去换取被接纳的资格。",
+    remind:"配得感不是能力问题，而是内在信念问题。先识别自己最主要的卡点（见下方分析），再有针对性地慢慢松动它。"};
+  return {label:"配得感偏低", tag:"内心深处常觉得自己“不配得”",
+    analysis:"你内心深处常常觉得自己不配得：好事降临会不安，接受夸奖会推拒，争取利益会内疚，被批评时习惯把责任揽到自己身上。你可能长期活在“要足够优秀才值得被爱”的信念里，习惯牺牲自己、迁就他人。",
+    remind:"这不是你的错，多源于成长经历中形成的条件化信念。配得感可以通过持续的自我觉察和练习慢慢重建，下方的卡点分析和建议可以作为起点。"};
+}
+
+function ringSVG(pct){
+  const r=56, c=2*Math.PI*r;
+  const off = c*(1-pct/100);
+  return `<svg width="140" height="140" viewBox="0 0 140 140">
+    <circle cx="70" cy="70" r="${r}" fill="none" stroke="#f6d3dc" stroke-width="10"/>
+    <circle cx="70" cy="70" r="${r}" fill="none" stroke="#b23a52" stroke-width="10"
+      stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"/>
+  </svg>`;
+}
+
+function renderResult(){
+  const lv = levelOf(totalScore);
+  const pct = Math.round(totalScore/MAX_SCORE*100);
+
+  $("result-main").innerHTML = `
+    <div class="score-card">
+      <div class="score-hero">
+        <div class="level serif">${lv.label}</div>
+        <div class="level-tag">${lv.tag}</div>
+        <div class="score-ring">
+          ${ringSVG(pct)}
+          <div class="num"><b>${totalScore}<span style="font-size:14px;color:var(--ink-soft)"> / ${MAX_SCORE}</span></b><span>配得感得分</span></div>
+        </div>
+      </div>
+      <div class="match-section">
+        <h4>总体心理分析</h4>
+        <p>${lv.analysis}</p>
+      </div>
+      <div class="match-section">
+        <h4>需要留意</h4>
+        <p>${lv.remind}</p>
+      </div>
+    </div>`;
+
+  /* 卡点排行 */
+  const ranked = Object.keys(CAUSES).map(k=>({key:k,cause:CAUSES[k],score:causeScores[k]}))
+    .sort((a,b)=>b.score-a.score);
+  const maxCause = ranked[0].score || 1;
+  $("rank-list").innerHTML = ranked.map((r,i)=>{
+    const p = Math.round(r.score/maxCause*100);
+    return `<div class="rank-item ${i===0&&r.score>0?"top":""}">
+      <div class="r-head">
+        <span class="r-name">${i===0&&r.score>0?"♥ ":""}${r.cause.name}</span>
+        <span class="r-pct">${r.score>0?r.score.toFixed(1):"—"}</span>
+      </div>
+      <div class="r-desc">${r.cause.desc}</div>
+      <div class="bar"><div class="bar-fill" style="width:${Math.max(p,8)}%"></div></div>
+    </div>`;
+  }).join("");
+
+  /* 重点卡点展开解读（前两名有分数的） */
+  const focus = ranked.filter(r=>r.score>0).slice(0,2);
+  $("insight-list").innerHTML = focus.map(r=>`
+    <div class="insight-card">
+      <h4>重点卡点 · ${r.cause.name}</h4>
+      <div class="block"><div class="label">表现</div><p>${r.cause.desc}</p></div>
+      <div class="block"><div class="label">深层原因</div><p>${r.cause.root}</p></div>
+      <div class="block"><div class="label">松动它的建议</div><p>${r.cause.tip}</p></div>
+    </div>`).join("");
+
+  /* 通用建议 */
+  const baseAdvice = [
+    "每天写下一件“我做得还不错”的具体小事，积累对自己的正面证据。",
+    "把“我不配”的念头换成“我可以先试试看”，用行动代替自我否定。",
+    "允许自己接受好意与夸奖，练习只说一句“谢谢”，不急着推回去。",
+    "照顾好自己的基本需求：睡眠、休息、表达感受，不再把自己排在最后。",
+    "若低配得感长期影响生活与关系，可考虑寻求专业心理咨询的陪伴。"
+  ];
+  /* 叠加主要卡点建议 */
+  if(focus.length) baseAdvice.push(`针对最明显的「${focus[0].cause.name}」：${focus[0].cause.tip}`);
+  $("advice-list").innerHTML = baseAdvice.map(a=>`<li>${a}</li>`).join("");
+}
+
+/* 重测 / 保存 */
+$("btn-restart").onclick = ()=>{current=0;answers=new Array(QUESTIONS.length).fill(null);show("home");};
+$("btn-copy").onclick = ()=>{
+  const lv = levelOf(totalScore);
+  let text="【测测你有多高的配得感】\n";
+  text+=`得分：${totalScore}/${MAX_SCORE}（${lv.label}）\n${lv.tag}\n\n${lv.analysis}\n\n卡点分布：\n`;
+  const ranked = Object.keys(CAUSES).map(k=>({key:k,cause:CAUSES[k],score:causeScores[k]})).sort((a,b)=>b.score-a.score);
+  ranked.forEach(r=>{text+=`· ${r.cause.name}：${r.score>0?r.score.toFixed(1):"无明显"} \n`;});
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>alert("结果已复制，可粘贴分享 ♥"));}
+  else{alert(text);}
+};
+</script>
+</body>
+</html>
